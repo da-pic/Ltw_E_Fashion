@@ -1,0 +1,5 @@
+dao\UserDAO.class
+controllers\MyServlet.class
+service\UserService.class
+controllers\AuthController.class
+model\User.class
