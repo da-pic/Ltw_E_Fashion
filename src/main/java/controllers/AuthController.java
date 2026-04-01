@@ -44,8 +44,18 @@ public class AuthController extends HttpServlet {
             if (loggedInUser != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("currentUser", loggedInUser);
-                response.sendRedirect(request.getContextPath() + "/home"); // Chuyển hướng sau khi login thành công
-            } else {
+              //  response.sendRedirect(request.getContextPath() + "/home"); // Chuyển hướng sau khi login thành công
+            
+              if ("staff".equals(loggedInUser.getRole())) {
+                response.sendRedirect(request.getContextPath() + "/seller/dashboard.jsp");
+              } else if ("customer".equals(loggedInUser.getRole())) {
+                response.sendRedirect(request.getContextPath() + "/home");
+              } else if ("admin".equals(loggedInUser.getRole())) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
+    }
+            }
+             
+            else {
                 request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
                 request.getRequestDispatcher("/WEB-INF/UserViews/login.jsp").forward(request, response);
             }

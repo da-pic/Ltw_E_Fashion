@@ -11,6 +11,7 @@ public class User {
     private String username;
     private String passwordHash;
     private boolean isActive;
+    private String role;
 
     public User() {}
 
@@ -40,4 +41,6 @@ public class User {
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }
     public boolean isActive() { return isActive; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role;}
 }
