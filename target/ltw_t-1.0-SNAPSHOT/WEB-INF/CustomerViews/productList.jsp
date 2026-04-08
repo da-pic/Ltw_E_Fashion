@@ -11,15 +11,44 @@
             background-color: #f5f5f5; 
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0; /* Đổi padding thành 0 để thanh nav sát mép trên */
         }
 
+        /* ================= THANH ĐIỀU HƯỚNG BÊN TRÊN ================= */
+        .top-nav {
+            display: flex;
+            justify-content: flex-end; /* Đẩy nội dung sang góc phải */
+            padding: 15px 30px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        /* Nút user là một thẻ <a> nên cần bỏ gạch chân */
+        .user-profile {
+            text-decoration: none; 
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .user-profile:hover {
+            color: #ee4d2d; /* Đổi màu khi di chuột vào */
+        }
+
+        /* ================= DANH SÁCH SẢN PHẨM ================= */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
             gap: 15px; 
             max-width: 1200px;
-            margin: 0 auto; 
+            margin: 0 auto 40px auto; 
+            padding: 0 20px; /* Thêm padding để không chạm sát mép màn hình 2 bên */
         }
 
         .product-card {
@@ -84,6 +113,22 @@
     </style>
 </head>
 <body>
+
+    <div class="top-nav">
+        <a href="${pageContext.request.contextPath}/CustomerProfile" class="user-profile">
+            <span class="avatar" style="font-size: 18px;">👤</span>
+            <span class="username">
+                <c:choose>
+                    <c:when test="${not empty sessionScope.currentUser}">
+                        ${sessionScope.currentUser.name} 
+                    </c:when>
+                    <c:otherwise>
+                        Tài Khoản
+                    </c:otherwise>
+                </c:choose>
+            </span>
+        </a>
+    </div>
 
     <h2 style="text-align: center; color: #ee4d2d;">GỢI Ý HÔM NAY</h2>
 

@@ -1,13 +1,16 @@
 controllers\AuthController.class
 controllers\ProductDetail.class
 controllers\MyServlet.class
+dao\CartDAO.class
 controllers\CustomerHome.class
 service\UserService.class
 util\DatabaseConnection.class
+service\CartService.class
 dao\ProductVariantDAO.class
 model\Product.class
 dao\UserDAO.class
 service\ProductService.class
+controllers\CustomerProfile.class
 dao\ProductDAO.class
 model\ProductVariant.class
 model\User.class

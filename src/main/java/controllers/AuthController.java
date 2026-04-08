@@ -25,9 +25,9 @@ public class AuthController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getServletPath();
         if ("/login".equals(path)) {
-            request.getRequestDispatcher("/WEB-INF/UserViews/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/CustomerViews/login.jsp").forward(request, response);
         } else if ("/register".equals(path)) {
-            request.getRequestDispatcher("/WEB-INF/UserViews/register.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/CustomerViews/register.jsp").forward(request, response);
         }
     }
 
