@@ -1,6 +1,15 @@
 controllers\AuthController.class
-dao\UserDAO.class
+controllers\ProductDetail.class
 controllers\MyServlet.class
-utils\DBConnection.class
+dao\CartDAO.class
+controllers\CustomerHome.class
 service\UserService.class
+util\DatabaseConnection.class
+dao\ProductVariantDAO.class
+model\Product.class
+dao\UserDAO.class
+model\Employee.class
+service\ProductService.class
+dao\ProductDAO.class
+model\ProductVariant.class
 model\User.class

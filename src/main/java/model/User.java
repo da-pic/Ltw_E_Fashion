@@ -1,6 +1,8 @@
 package model;
 
+import java.util.List;
 import java.sql.Date;
+import model.Coupon;
 
 public class User {
     private String id;
@@ -11,7 +13,9 @@ public class User {
     private String username;
     private String passwordHash;
     private boolean isActive;
-
+    
+    private List<Coupon> userCoupons;
+    
     public User() {}
 
     public User(String id, String name, Date birthdate, String phonenumber, String gender, String username, String passwordHash, boolean isActive) {
@@ -40,4 +44,12 @@ public class User {
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }
     public boolean isActive() { return isActive; }
+    
+    public void setUserCoupons(List<Coupon> coupons){
+        this.userCoupons = coupons;
+    }
+    
+    public List<Coupon> getUserCoupons(){
+        return userCoupons;
+    }
 }

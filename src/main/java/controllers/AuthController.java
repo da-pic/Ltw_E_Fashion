@@ -41,10 +41,10 @@ public class AuthController extends HttpServlet {
             if (loggedInUser != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("currentUser", loggedInUser);
-                response.sendRedirect(request.getContextPath() + "/home"); // Chuyển hướng sau khi login thành công
+                response.sendRedirect(request.getContextPath() + "/CustomerHome");
             } else {
                 request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
-                request.getRequestDispatcher("/WEB-INF/UserViews/login.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/CustomerViews/login.jsp").forward(request, response);
             }
 
         } else if ("/register".equals(path)) {
@@ -61,7 +61,7 @@ public class AuthController extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/login?msg=success");
             } else {
                 request.setAttribute("error", "Tên đăng nhập đã tồn tại hoặc lỗi hệ thống!");
-                request.getRequestDispatcher("/WEB-INF/UserViews/register.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/CustomerViews/register.jsp").forward(request, response);
             }
         }
     }
