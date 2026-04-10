@@ -1,8 +1,13 @@
 package dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import model.ProductVariant;
-import java.util.*;
-import java.sql.*;
 import util.DatabaseConnection;
 
 public class ProductVariantDAO {
@@ -31,5 +36,50 @@ public class ProductVariantDAO {
         }
         
         return productVariantsList;
+    }
+
+    public boolean insertVariant(ProductVariant variant) {
+        String sql = "INSERT INTO product_variants (id, product_id, color, size, price, stock, is_active) VALUES (?, ?, ?, ?, ?, ?, 1)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, variant.getId());
+            ps.setString(2, variant.getProduct_id()); 
+            ps.setString(3, variant.getColor());
+            ps.setString(4, variant.getSize());
+            ps.setInt(5, variant.getPrice());
+            ps.setInt(6, variant.getStock());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateVariant(ProductVariant variant) {
+        String sql = "UPDATE product_variants SET color = ?, size = ?, price = ?, stock = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, variant.getColor());
+            ps.setString(2, variant.getSize());
+            ps.setInt(3, variant.getPrice());
+            ps.setInt(4, variant.getStock());
+            ps.setString(5, variant.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean deleteVariant(String id) {
+        String sql = "DELETE FROM product_variants WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

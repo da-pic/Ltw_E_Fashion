@@ -5,8 +5,7 @@ package model;
  * @author Chinh
  */
 
-import model.ProductVariant;
-import java.util.*;
+import java.util.List;
 
 public class Product {
     private String id;
@@ -17,6 +16,7 @@ public class Product {
     private String description;
     private String display_image; 
     private Double display_price;
+    private Double display_max_price;
 
     private List<ProductVariant> productVariants;
 
@@ -103,4 +103,11 @@ public class Product {
         this.productVariants = productVariants;
     }
     
+    public void setDisplay_max_price(Double display_max_price) {
+        this.display_max_price = display_max_price;
+    }
+
+    public Double getDisplay_max_price() {
+        return display_max_price;
+    }
 }

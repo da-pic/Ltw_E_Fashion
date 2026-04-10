@@ -1,9 +1,11 @@
 package service;
 
+import java.util.UUID;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 import dao.UserDAO;
 import model.User;
-import org.mindrot.jbcrypt.BCrypt;
-import java.util.UUID;
 
 public class UserService {
     private UserDAO userDAO = new UserDAO();
@@ -28,5 +30,18 @@ public class UserService {
         newUser.setPasswordHash(hashedPassword);
         
         return userDAO.save(newUser);
+    }
+
+    public boolean checkRoleAdmin(String userId) {
+
+        return userDAO.isAdmin(userId); 
+    }
+
+    public java.util.List<User> getAllUsers() {
+        return userDAO.getAllUsers();
+    }
+
+    public boolean updateUserStatus(String userId, boolean status) {
+        return userDAO.updateUserStatus(userId, status);
     }
 }

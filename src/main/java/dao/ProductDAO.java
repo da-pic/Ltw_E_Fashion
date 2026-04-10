@@ -3,10 +3,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package dao;
-import java.sql.*;
-import util.DatabaseConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import model.Product;
-import java.util.*;
+import util.DatabaseConnection;
 /**
  *
  * @author Chinh
@@ -21,6 +26,7 @@ public class ProductDAO {
                 + "p.is_active, "
                 + "p.description, "
                 + "MIN(v.price) AS display_price, "
+                + "MAX(v.price) AS display_max_price, "
                 + "(SELECT image FROM product_variants WHERE product_id = p.id LIMIT 1) AS display_image "
                 + "FROM product p "
                 + "LEFT JOIN product_variants v ON p.id = v.product_id "
@@ -36,9 +42,12 @@ public class ProductDAO {
                 Boolean is_Active = rs.getBoolean("is_active");
                 String description = rs.getString("description");
                 Double display_price = rs.getDouble("display_price");
+                Double display_max_price = rs.getDouble("display_max_price");
                 String display_image = rs.getString("display_image");
+                
             
                 Product product = new Product(id, product_name, brand_id, category_id, is_Active, description, display_price, display_image);
+                product.setDisplay_max_price(display_max_price);
                 productList.add(product);
             }
         }catch (SQLException e){
@@ -66,5 +75,83 @@ public class ProductDAO {
         }   
         
         return null;
+    }
+
+    public boolean insertProduct(Product product) {
+        String sql = "INSERT INTO product (id, product_name, brand_id, category_id, description, is_active) VALUES (?, ?, ?, ?, ?, 1)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, product.getId());
+            ps.setString(2, product.getProduct_name()); // Cập nhật thành getProduct_name
+            ps.setString(3, product.getBrand_id());     // Cập nhật thành getBrand_id
+            ps.setInt(4, product.getCategory_id());     // Cập nhật thành getCategory_id
+            ps.setString(5, product.getDescription());
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateProduct(Product product) {
+        String sql = "UPDATE product SET product_name = ?, brand_id = ?, category_id = ?, description = ?, is_active = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, product.getProduct_name());
+            ps.setString(2, product.getBrand_id());
+            ps.setInt(3, product.getCategory_id());
+            ps.setString(4, product.getDescription());
+            ps.setBoolean(5, product.getIs_active());
+            ps.setString(6, product.getId());
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean deleteProduct(String id) {
+        String sql = "DELETE FROM product WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean softDeleteProduct(String id) {
+        String sql = "UPDATE product SET is_active = 0 WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean restoreProduct(String id) {
+        String sql = "UPDATE product SET is_active = 1 WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
