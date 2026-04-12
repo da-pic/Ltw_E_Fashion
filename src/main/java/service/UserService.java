@@ -11,7 +11,7 @@ public class UserService {
     public User login(String username, String plainPassword) {
         User user = userDAO.findByUsername(username);
         if (user != null && BCrypt.checkpw(plainPassword, user.getPasswordHash())) {
-            if (!user.isActive()) {
+            if (!user.isactive()) {
                 throw new RuntimeException("Tài khoản đã bị khóa!");
             }
             return user;
@@ -28,5 +28,9 @@ public class UserService {
         newUser.setPasswordHash(hashedPassword);
         
         return userDAO.save(newUser);
+    }
+    
+    public boolean updateInformationByUserId(User user){
+        return userDAO.updateInformationByUserId(user);
     }
 }

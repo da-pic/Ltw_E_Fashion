@@ -10,11 +10,12 @@ public class User {
     private String gender;
     private String username;
     private String passwordHash;
-    private boolean isActive;
+    private boolean isactive;
+    
 
     public User() {}
 
-    public User(String id, String name, Date birthdate, String phonenumber, String gender, String username, String passwordHash, boolean isActive) {
+    public User(String id, String name, Date birthdate, String phonenumber, String gender, String username, String passwordHash, boolean isactive) {
         this.id = id;
         this.name = name;
         this.birthdate = birthdate;
@@ -22,7 +23,7 @@ public class User {
         this.gender = gender;
         this.username = username;
         this.passwordHash = passwordHash;
-        this.isActive = isActive;
+        this.isactive = isactive;
     }
 
     public String getId() { return id; }
@@ -39,5 +40,7 @@ public class User {
     public void setPhonenumber(String phonenumber) { this.phonenumber = phonenumber; }
     public String getGender() { return gender; }
     public void setGender(String gender) { this.gender = gender; }
-    public boolean isActive() { return isActive; }
+    public boolean isactive() { return isactive; }
+    public void setIsactive(boolean isactive) { this.isactive = isactive; }
+
 }

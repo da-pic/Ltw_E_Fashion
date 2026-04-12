@@ -11,13 +11,12 @@
             background-color: #f5f5f5; 
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0; /* Đổi padding thành 0 để thanh nav sát mép trên */
+            padding: 0;
         }
 
-        /* ================= THANH ĐIỀU HƯỚNG BÊN TRÊN ================= */
         .top-nav {
             display: flex;
-            justify-content: flex-end; /* Đẩy nội dung sang góc phải */
+            justify-content: flex-end; 
             padding: 15px 30px;
             background-color: #fff;
             border-bottom: 1px solid #ddd;
@@ -25,7 +24,6 @@
             margin-bottom: 20px;
         }
 
-        /* Nút user là một thẻ <a> nên cần bỏ gạch chân */
         .user-profile {
             text-decoration: none; 
             color: #333;
@@ -38,17 +36,16 @@
         }
 
         .user-profile:hover {
-            color: #ee4d2d; /* Đổi màu khi di chuột vào */
+            color: #ee4d2d; 
         }
 
-        /* ================= DANH SÁCH SẢN PHẨM ================= */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
             gap: 15px; 
             max-width: 1200px;
             margin: 0 auto 40px auto; 
-            padding: 0 20px; /* Thêm padding để không chạm sát mép màn hình 2 bên */
+            padding: 0 20px; 
         }
 
         .product-card {

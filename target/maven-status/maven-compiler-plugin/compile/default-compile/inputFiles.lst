@@ -3,6 +3,7 @@ D:\Java\ltw_t\src\main\java\dao\UserDAO.java
 D:\Java\ltw_t\src\main\java\model\Product.java
 D:\Java\ltw_t\src\main\java\service\ProductService.java
 D:\Java\ltw_t\src\main\java\controllers\MyServlet.java
+D:\Java\ltw_t\src\main\java\service\CartService.java
 D:\Java\ltw_t\src\main\java\dao\ProductVariantDAO.java
 D:\Java\ltw_t\src\main\java\model\ProductVariant.java
 D:\Java\ltw_t\src\main\java\controllers\CustomerHome.java
@@ -11,4 +12,5 @@ D:\Java\ltw_t\src\main\java\controllers\ProductDetail.java
 D:\Java\ltw_t\src\main\java\controllers\CustomerProfile.java
 D:\Java\ltw_t\src\main\java\dao\ProductDAO.java
 D:\Java\ltw_t\src\main\java\controllers\AuthController.java
+D:\Java\ltw_t\src\main\java\dao\CartDAO.java
 D:\Java\ltw_t\src\main\java\service\UserService.java
