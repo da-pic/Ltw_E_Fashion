@@ -1,6 +1,7 @@
 package service;
 
 import dao.UserDAO;
+import java.util.List;
 import model.User;
 import org.mindrot.jbcrypt.BCrypt;
 import java.util.UUID;
@@ -28,5 +29,33 @@ public class UserService {
         newUser.setPasswordHash(hashedPassword);
         
         return userDAO.save(newUser);
+    }
+    
+    public List<User> getAllUsers() {
+        List<User> users = userDAO.getAllUsers();
+
+        for (User u : users) {
+            String role = userDAO.getUserRoleByID(u.getId());
+            u.setRole(role);
+        }
+
+        return users;
+    }
+    
+    public String getRole(String userId) {
+        return userDAO.getUserRoleByID(userId);
+    }
+    
+    public User getUserByID(String userId) {
+        return userDAO.findByUserID(userId);
+    }
+    
+    public boolean toggleUserStatus(String userId, boolean currentStatus) {
+        boolean newStatus = !currentStatus;
+        return userDAO.updateUserStatus(userId, newStatus);
+    }
+    
+    public boolean updateUser(User user) {
+        return userDAO.updateUser(user);
     }
 }

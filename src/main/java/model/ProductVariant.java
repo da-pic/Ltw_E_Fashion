@@ -6,6 +6,7 @@ public class ProductVariant {
     private String color;
     private String size;
     private String image;
+    private String importPrice;
     private int price;
     private int stock;
     private Boolean is_active;
@@ -72,6 +73,10 @@ public class ProductVariant {
 
     public void setImage(String image) {
         this.image = image;
+    }
+    
+    public void setImportPrice(int import_price) {
+        this.price = price;
     }
 
     public void setPrice(int price) {

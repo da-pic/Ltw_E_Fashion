@@ -1,7 +1,7 @@
 
 package dao;
 
-import model.ProductVariant;
+import model.CartItem;
 import java.util.*;
 import java.sql.*;
 import util.*;
@@ -26,96 +26,163 @@ public class CartDAO {
         return null;
     }
     
-    public List<ProductVariant> getAllProductVariantFromCart(String cartID){
-        String sql = "SELECT pv.* " +
-                 "FROM cart_items ci " +
-                 "JOIN product_variants pv ON ci.product_variant_id = pv.id " +
-                 "WHERE ci.cart_id = ?";
-    
-        List<ProductVariant> list = new ArrayList<>();
-    
-        try(Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)){
-        
-            stmt.setString(1, cartID);
-            ResultSet rs = stmt.executeQuery();
-        
-            while(rs.next()){
-                String id = rs.getString("id");
-                String product_id = rs.getString("product_id");
-                String color = rs.getString("color");
-                String size = rs.getString("size");
-                String image = rs.getString("image");
-                int price = rs.getInt("price");
-                int stock = rs.getInt("stock");
-                Boolean is_active = rs.getBoolean("is_active");
+    public boolean createUserCart(String userID){
+        String sql = "INSERT INTO cart (id, user_id) VALUES (?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection()) {
 
-                ProductVariant pv = new ProductVariant(
-                    id, product_id, color, size, image, price, stock, is_active
-                );
+            String cartId = UUID.randomUUID().toString();
+
             
-                list.add(pv);
-            }
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, cartId);
+            stmt.setString(2, userID);
+            return stmt.executeUpdate() > 0;
         
         } catch (SQLException e){
             e.printStackTrace();
         }
+   
+        return false;
+    }
     
+    public List<CartItem> getCartItemsByID(String cartID) {
+
+        List<CartItem> list = new ArrayList<>();
+
+        String sql = "SELECT ci.cart_id, ci.product_variant_id, ci.amount, ci.unit_price, " +
+                     "p.product_name, pv.image, pv.color, pv.size " +
+                     "FROM cart c " +
+                     "JOIN cart_items ci ON c.id = ci.cart_id " +
+                     "JOIN product_variants pv ON ci.product_variant_id = pv.id " +
+                     "JOIN product p ON pv.product_id = p.id " +
+                     "WHERE c.id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cartID);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                CartItem item = new CartItem(
+                    rs.getString("cart_id"),
+                    rs.getString("product_variant_id"),
+                    rs.getString("product_name"),
+                    rs.getString("image"),
+                    rs.getString("color"),
+                    rs.getString("size"),
+                    rs.getInt("amount"),
+                    rs.getInt("unit_price")
+                );
+
+                list.add(item);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return list;
     }
     
-    public void addProductToCart(String cartID, ProductVariant product_variant, int amount){
-        String checkSql = "SELECT amount FROM cart_items "
-                         + "WHERE cart_id = ? AND product_variant_id = ?";
-        
-        String updateSql = "UPDATE cart_items SET amount = amount + ? "
-                         + "WHERE cart_id = ? AND product_variant_id = ?";
-        
-        String insertSql = "INSERT INTO cart_items "
-                + "(cart_id, product_variant_id, amount, unit_price) VALUES (?, ?, ?, ?)";
+    public boolean addItemsIntoCart(String userID, String productVariantID, int amount, int unitPrice) {
 
-        try(Connection conn = DatabaseConnection.getConnection()){
+        String cartId = getCartFromUser(userID);
 
-            PreparedStatement checkStmt = conn.prepareStatement(checkSql);
-            checkStmt.setString(1, cartID);
-            checkStmt.setString(2, product_variant.getId());
-            ResultSet rs = checkStmt.executeQuery();
+        try (Connection conn = DatabaseConnection.getConnection()) {
 
-            if(rs.next()){
-                // Update
-                PreparedStatement updateStmt = conn.prepareStatement(updateSql);
-                updateStmt.setInt(1, amount);
-                updateStmt.setString(2, cartID);
-                updateStmt.setString(3, product_variant.getId());
-                updateStmt.executeUpdate();
+            String insertSQL = "INSERT INTO cart_items (cart_id, product_variant_id, "
+                    + "amount, unit_price) VALUES (?, ?, ?, ?)";
+            PreparedStatement insertStmt = conn.prepareStatement(insertSQL);
 
-            } else {
-                //  Insert
-                PreparedStatement insertStmt = conn.prepareStatement(insertSql);
-                insertStmt.setString(1, cartID);
-                insertStmt.setString(2, product_variant.getId());
-                insertStmt.setInt(3, amount);
-                insertStmt.setInt(4, product_variant.getPrice());
-                insertStmt.executeUpdate();
+            insertStmt.setString(1, cartId);
+            insertStmt.setString(2, productVariantID);
+            insertStmt.setInt(3, amount);
+            insertStmt.setInt(4, unitPrice);
+
+            return insertStmt.executeUpdate() > 0;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
+    public CartItem getItemFromCart(String cartId, String productVariantID) {
+
+        String sql = "SELECT ci.cart_id, ci.product_variant_id, ci.amount, ci.unit_price, " +
+                     "p.product_name, pv.image, pv.color, pv.size " +
+                     "FROM cart_items ci " +
+                     "JOIN product_variants pv ON ci.product_variant_id = pv.id " +
+                     "JOIN product p ON pv.product_id = p.id " +
+                     "WHERE ci.cart_id = ? AND ci.product_variant_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cartId);
+            stmt.setString(2, productVariantID);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new CartItem(
+                    rs.getString("cart_id"),
+                    rs.getString("product_variant_id"),
+                    rs.getString("product_name"),
+                    rs.getString("image"),
+                    rs.getString("color"),
+                    rs.getString("size"),
+                    rs.getInt("amount"),
+                    rs.getInt("unit_price")
+                );
             }
 
-        } catch (SQLException e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-    } 
+
+        return null;
+    }
     
-    public void removeProductFromCart(String cartID, String productVariantId){
-        String sql = "DELETE FROM cart_items WHERE product_variant_id = ? AND cart_id = ?";
-
-        try(Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)){
-
-            stmt.setString(1, productVariantId);
+    public boolean updateCartItem(String userID, String productVariantID, int amount){
+        String cartID = getCartFromUser(userID);
+        String insertSQL = "UPDATE cart_items SET amount = amount + ? "
+                    + "WHERE cart_id = ? AND product_variant_id = ?";
+        
+        try(Connection conn = DatabaseConnection.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(insertSQL);
+            
+            stmt.setInt(1, amount);
             stmt.setString(2, cartID);
-            stmt.executeUpdate();
-
-        } catch (SQLException e){
+            stmt.setString(3, productVariantID);
+            
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        return false;
+    }
+
+    public boolean deleteCartItem(String cartId, String productVariantID) {
+
+        String sql = "DELETE FROM cart_items WHERE cart_id = ? AND product_variant_id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cartId);
+            stmt.setString(2, productVariantID);
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

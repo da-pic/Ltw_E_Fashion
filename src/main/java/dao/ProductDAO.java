@@ -4,10 +4,7 @@ import java.sql.*;
 import util.DatabaseConnection;
 import model.Product;
 import java.util.*;
-/**
- *
- * @author Chinh
- */
+
 public class ProductDAO {
     public List<Product> getAllProduct() {
 
@@ -35,7 +32,7 @@ public class ProductDAO {
                     rs.getInt("category_id"),
                     rs.getBoolean("is_active"),
                     rs.getString("description"),
-                    rs.getInt("display_price")
+                    rs.getInt("display_price"),
                     rs.getString("display_image")
                 );
 
@@ -58,10 +55,8 @@ public class ProductDAO {
                      "FROM product p " +
                      "LEFT JOIN product_variants v ON p.id = v.product_id " +
                      "LEFT JOIN supplier s ON p.supplier_id = s.id " +
-                     "GROUP BY p.id, p.product_name, p.brand_id, p.category_id, p.is_active, p.description, s.supplier_name"
-                     + "WHERE p.id = ?";
-        
-
+                     "WHERE p.id = ? " +
+                     "GROUP BY p.id, p.product_name, p.brand_id, p.category_id, p.is_active, p.description, s.supplier_name";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -78,7 +73,7 @@ public class ProductDAO {
                     rs.getInt("category_id"),
                     rs.getBoolean("is_active"),
                     rs.getString("description"),
-                    rs.getDouble("display_price"),
+                    rs.getInt("display_price"),
                     rs.getString("display_image")
                 );
             }
@@ -92,7 +87,8 @@ public class ProductDAO {
     
     public boolean addProduct(Product p) {
 
-        String sql = "INSERT INTO product (id, product_name, brand_id, category_id, supplier_id, is_active, description) " +
+        String sql = "INSERT INTO product (id, product_name, brand_id, category_id, "
+                     + "supplier_id, is_active, description) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -103,12 +99,53 @@ public class ProductDAO {
             stmt.setString(3, p.getBrand_id());
             stmt.setInt(4, p.getCategory_id());
 
-            // ⚠ convert supplier name -> supplier_id (cần tồn tại)
-            stmt.setString(5, getSupplierIdByName(p.getSupplier(), conn));
+            stmt.setString(5, p.getSupplierID());
 
-            stmt.setBoolean(6, p.getIs_active());
+            stmt.setBoolean(6, p.isActive());
             stmt.setString(7, p.getDescription());
 
+            return stmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
+    public boolean updateProduct(Product p) {
+
+        String sql = "UPDATE product SET product_name = ?, brand_id = ?, category_id = ?, " +
+                     "supplier_id = ?, is_active = ?, description = ? WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, p.getProduct_name());
+            stmt.setString(2, p.getBrand_id());
+            stmt.setInt(3, p.getCategory_id());
+            stmt.setString(4, p.getSupplierID());
+            stmt.setBoolean(5, p.isActive());
+            stmt.setString(6, p.getDescription());
+            stmt.setString(7, p.getId());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
+    public boolean deleteProduct(String productId) {
+
+        String sql = "UPDATE product SET is_active = FALSE WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, productId);
             return stmt.executeUpdate() > 0;
 
         } catch (Exception e) {
