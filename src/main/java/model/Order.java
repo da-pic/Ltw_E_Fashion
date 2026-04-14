@@ -20,6 +20,10 @@ public class Order {
     private String payment_status;
     private Timestamp created_at; 
     
+    private String userName;
+    private String phoneNumber;
+    private String address;
+    
     private List<OrderItem> orderItems;
 
     public Order() {
@@ -40,8 +44,22 @@ public class Order {
         this.created_at = created_at;
         this.orderItems = new ArrayList<>();
     }
-
-    // 3. Getters và Setters
+    
+    
+    public String getUserName(){ return this.userName; }
+    public String phoneNumber() { return this.phoneNumber; }
+    public String getAddress() { return this.address; }
+    public void setUserName(String userName){
+        this.userName = userName;
+    }
+    
+    public void setPhoneNumber(String phoneNumber){
+        this.phoneNumber = phoneNumber;
+    }
+    
+    public void setAddress(String address){
+        this.address = address;
+    }
     public String getId() {
         return id;
     }

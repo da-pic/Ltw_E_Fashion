@@ -16,6 +16,7 @@ model\ProductVariant.class
 model\User.class
 controllers\AdminUpdateProduct.class
 controllers\AdminUser.class
+controllers\AdminOrderDetail.class
 controllers\CustomerAddress.class
 model\Brand.class
 service\AddressService.class
@@ -43,6 +44,7 @@ dao\CouponDAO.class
 model\OrderItem.class
 controllers\AdminDashboard.class
 controllers\AdminAddProduct.class
+controllers\AdminOrder.class
 model\Coupon.class
 controllers\AdminProduct.class
 dao\EmployeeDAO.class
