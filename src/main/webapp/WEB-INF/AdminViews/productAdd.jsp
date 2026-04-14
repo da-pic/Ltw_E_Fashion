@@ -50,6 +50,7 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            box-sizing: border-box;
         }
 
         .row {
@@ -87,7 +88,7 @@
     <div class="form-card">
         <h2 style="text-align:center; color:#e64a19;">NHẬP SẢN PHẨM MỚI</h2>
 
-        <form action="${pageContext.request.contextPath}/admin/products/add" method="POST">
+        <form action="${pageContext.request.contextPath}/admin/products/add" method="POST" enctype="multipart/form-data">
 
             <!-- ID -->
             <div class="form-group">
@@ -155,6 +156,24 @@
                 <textarea name="description" class="form-control">${description}</textarea>
             </div>
 
+            <h3 style="color: #1976d2; margin-top: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px;">THÔNG TIN PHÂN LOẠI</h3>
+            <button type="button" class="btn-submit" style="background-color: #4caf50; margin-bottom: 15px; width: auto;" onclick="addVariantRow()">+ Thêm phân loại</button>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;" id="variantTable">
+                <thead>
+                    <tr style="background-color: #f8f9fa;">
+                        <th style="padding: 10px; border: 1px solid #ddd; width: 15%; text-align: center;">Ảnh</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Màu sắc</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Kích cỡ</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Giá bán (VNĐ)</th>
+                        <th style="padding: 10px; border: 1px solid #ddd;">Tồn kho</th>
+                        <th style="padding: 10px; border: 1px solid #ddd; width: 8%; text-align: center;">Xóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+
             <!-- SUBMIT -->
             <button type="submit" name="action" value="save" class="btn-submit">
                 LƯU
@@ -172,6 +191,36 @@
 
     </div>
 </div>
+<script>
+    let rowCount = 0;
+    
+    function addVariantRow() {
+        rowCount++;
+        const tbody = document.querySelector('#variantTable tbody');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="text-align: center; border: 1px solid #ddd; padding: 8px; vertical-align: middle;">
+                <img id="preview_${rowCount}" src="" style="width: 50px; height: 50px; object-fit: cover; display: block; margin: 0 auto 5px; border-radius:4px;" alt="Ảnh">
+                <input type="file" name="varImageFile" class="form-control" style="font-size: 11px; padding: 4px;" accept="image/*" onchange="previewImage(this, 'preview_${rowCount}')">
+            </td>
+            <td style="border: 1px solid #ddd; padding: 8px; vertical-align: middle;"><input type="text" name="varColor" class="form-control" required></td>
+            <td style="border: 1px solid #ddd; padding: 8px; vertical-align: middle;"><input type="text" name="varSize" class="form-control" required></td>
+            <td style="border: 1px solid #ddd; padding: 8px; vertical-align: middle;"><input type="number" name="varPrice" class="form-control" required min="0"></td>
+            <td style="border: 1px solid #ddd; padding: 8px; vertical-align: middle;"><input type="number" name="varStock" class="form-control" required min="0" value="0"></td>
+            <td style="text-align: center; border: 1px solid #ddd; padding: 8px; vertical-align: middle;"><button type="button" style="background: #d32f2f; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;" onclick="this.closest('tr').remove()">X</button></td>
+        `;
+        tbody.appendChild(tr);
+    }
 
+    function previewImage(input, imgId) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) { document.getElementById(imgId).src = e.target.result; }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { addVariantRow(); });
+</script>
 </body>
 </html>

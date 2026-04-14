@@ -1,17 +1,30 @@
 package controllers;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import dao.BrandDAO;
 import dao.CategoryDAO;
 import dao.SupplierDAO;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import model.Product;
 import service.ProductService;
+
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
+    maxFileSize = 1024 * 1024 * 10,       // 10MB
+    maxRequestSize = 1024 * 1024 * 50     // 50MB
+)
 
 @WebServlet(urlPatterns = {"/admin/products/update"})
 public class AdminUpdateProduct extends HttpServlet { 
@@ -48,8 +61,14 @@ public class AdminUpdateProduct extends HttpServlet {
         try {
             String id = request.getParameter("productId"); 
             String name = request.getParameter("productName");
-            String brandId = request.getParameter("brandId");
             String supplierId = request.getParameter("supplierId");
+            if (supplierId != null && supplierId.trim().isEmpty()) {
+                supplierId = null; 
+            }
+            String brandId = request.getParameter("brandId");
+            if (brandId != null && brandId.trim().isEmpty()) {
+                brandId = null;
+            }
             int categoryId = Integer.parseInt(request.getParameter("categoryId"));
             String description = request.getParameter("description");
             boolean isActive = Boolean.parseBoolean(request.getParameter("isActive"));
@@ -65,8 +84,36 @@ public class AdminUpdateProduct extends HttpServlet {
             String[] varPrices = request.getParameterValues("varPrice");
             String[] varStocks = request.getParameterValues("varStock");
 
+            String[] varExistingImages = request.getParameterValues("varExistingImage");
+
+            List<Part> fileParts = new ArrayList<>();
+            for (Part part : request.getParts()) {
+                if ("varImageFile".equals(part.getName())) {
+                    fileParts.add(part);
+                }
+            }
+
+            String[] finalImages = new String[varIds.length];
+            String uploadPath = request.getServletContext().getRealPath("") + File.separator + "images";
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdir();
+
+            for (int i = 0; i < varIds.length; i++) {
+                Part filePart = fileParts.get(i);
+                String existingImage = varExistingImages[i];
+
+                if (filePart != null && filePart.getSize() > 0) {
+                    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                    String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName; // Tránh trùng tên
+                    filePart.write(uploadPath + File.separator + uniqueFileName);
+                    finalImages[i] = "/images/" + uniqueFileName;
+                } else {
+                    finalImages[i] = (existingImage != null && !existingImage.isEmpty()) ? existingImage : null;
+                }
+            }
+
             boolean isSuccess = productService.updateProductWithVariants(
-                    updatedProduct, varIds, varColors, varSizes, varPrices, varStocks
+                    updatedProduct, varIds, varColors, varSizes, varPrices, varStocks, finalImages
             );
 
             if (isSuccess) {

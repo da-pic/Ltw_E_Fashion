@@ -1,12 +1,16 @@
 package service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import dao.BrandDAO;
+import dao.CategoryDAO;
 import dao.ProductDAO;
 import dao.ProductVariantDAO;
-import dao.CategoryDAO;
-import dao.BrandDAO;
 import model.Product;
 import model.ProductVariant;
-import java.util.*;
 
 public class ProductService {
 
@@ -78,7 +82,7 @@ public class ProductService {
         this.productDAO.deleteProduct(productID);
     }
     
-    public boolean updateProductWithVariants(Product product, String[] varIds, String[] varColors, String[] varSizes, String[] varPrices, String[] varStocks) {
+    public boolean updateProductWithVariants(Product product, String[] varIds, String[] varColors, String[] varSizes, String[] varPrices, String[] varStocks, String[] varImages) {
         boolean pSuccess = productDAO.updateProduct(product);
         if (!pSuccess) return false;
 
@@ -92,13 +96,15 @@ public class ProductService {
                 String size = varSizes[i];
                 int price = (varPrices[i] != null && !varPrices[i].isEmpty()) ? (int) Double.parseDouble(varPrices[i]) : 0;
                 int stock = (varStocks[i] != null && !varStocks[i].isEmpty()) ? Integer.parseInt(varStocks[i]) : 0;
+                
+                String image = (varImages != null && i < varImages.length) ? varImages[i] : null;
 
                 if (vId == null || vId.trim().isEmpty()) {
                     vId = "v-" + UUID.randomUUID().toString().substring(0, 8);
-                    ProductVariant newV = new ProductVariant(vId, product.getId(), color, size, null, price, stock, true);
+                    ProductVariant newV = new ProductVariant(vId, product.getId(), color, size, image, price, stock, true);
                     variantDAO.addProductVariants(newV);
                 } else {
-                    ProductVariant updateV = new ProductVariant(vId, product.getId(), color, size, null, price, stock, true);
+                    ProductVariant updateV = new ProductVariant(vId, product.getId(), color, size, image, price, stock, true);
                     variantDAO.updateVariant(updateV);
                     submittedIds.add(vId); 
                 }
@@ -116,6 +122,28 @@ public class ProductService {
         return true;
     }
     
+    public boolean addProductWithVariants(Product product, String[] varColors, String[] varSizes, String[] varPrices, String[] varStocks, String[] varImages) {
+        
+        boolean isProductAdded = addProduct(product);
+        if (!isProductAdded) return false; // Nếu lưu sản phẩm gốc lỗi (VD trùng ID) thì dừng luôn
+
+        if (varColors != null) {
+            for (int i = 0; i < varColors.length; i++) {
+                String vId = "v-" + UUID.randomUUID().toString().substring(0, 8);
+                String color = varColors[i];
+                String size = varSizes[i];
+                int price = (varPrices[i] != null && !varPrices[i].isEmpty()) ? (int) Double.parseDouble(varPrices[i]) : 0;
+                int stock = (varStocks[i] != null && !varStocks[i].isEmpty()) ? Integer.parseInt(varStocks[i]) : 0;
+                
+                String image = (varImages != null && i < varImages.length) ? varImages[i] : null;
+
+                ProductVariant newV = new ProductVariant(vId, product.getId(), color, size, image, price, stock, true);
+                variantDAO.addProductVariants(newV);
+            }
+        }
+        return true;
+    }
+
     public boolean restoreProduct(String id) {
         return productDAO.restoreProduct(id);
     }

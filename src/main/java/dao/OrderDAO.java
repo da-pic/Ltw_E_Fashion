@@ -1,13 +1,17 @@
 package dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import util.DatabaseConnection;
+
 import model.Order;
 import model.OrderItem;
+import util.DatabaseConnection;
 
 public class OrderDAO {
 
@@ -30,7 +34,7 @@ public class OrderDAO {
     }
 
     public long getTotalRevenue() {
-        String sql = "SELECT SUM(total_price) FROM orders WHERE status = 'delivered'";
+        String sql = "SELECT SUM(total_price) FROM orders WHERE order_status = 'delivered'";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);

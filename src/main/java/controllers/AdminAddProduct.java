@@ -1,15 +1,30 @@
 package controllers;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import dao.BrandDAO;
 import dao.CategoryDAO;
 import dao.SupplierDAO;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import model.Product;
 import service.ProductService;
 
-import java.io.IOException;
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2,
+    maxFileSize = 1024 * 1024 * 10,
+    maxRequestSize = 1024 * 1024 * 50
+)
 
 @WebServlet(urlPatterns = {"/admin/products/add"})
 public class AdminAddProduct extends HttpServlet {
@@ -73,14 +88,49 @@ public class AdminAddProduct extends HttpServlet {
             }
             String supplierId = supplierDAO.addNewSupplier(supplierInput.trim());
 
+            // ===== LẤY THÔNG TIN PHÂN LOẠI & ẢNH =====
+            String[] varColors = request.getParameterValues("varColor");
+            String[] varSizes = request.getParameterValues("varSize");
+            String[] varPrices = request.getParameterValues("varPrice");
+            String[] varStocks = request.getParameterValues("varStock");
+
+            if (varColors == null || varColors.length == 0) {
+                throw new Exception("Vui lòng thêm ít nhất 1 phân loại sản phẩm!");
+            }
+
+            // Xử lý upload file
+            List<Part> fileParts = new ArrayList<>();
+            for (Part part : request.getParts()) {
+                if ("varImageFile".equals(part.getName())) {
+                    fileParts.add(part);
+                }
+            }
+
+            String[] finalImages = new String[varColors.length];
+            String uploadPath = request.getServletContext().getRealPath("") + File.separator + "images";
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists()) uploadDir.mkdir();
+
+            for (int i = 0; i < varColors.length; i++) {
+                Part filePart = (i < fileParts.size()) ? fileParts.get(i) : null;
+                if (filePart != null && filePart.getSize() > 0) {
+                    String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                    String uniqueFileName = UUID.randomUUID().toString() + "_" + fileName;
+                    filePart.write(uploadPath + File.separator + uniqueFileName);
+                    finalImages[i] = "/images/" + uniqueFileName;
+                } else {
+                    finalImages[i] = null;
+                }
+            }
+
             // ===== SAVE =====
             Product newProduct = new Product(id, name, brandId, supplierId,
                     categoryId, true, description, 0, null);
 
-            if (productService.addProduct(newProduct)) {
+            if (productService.addProductWithVariants(newProduct, varColors, varSizes, varPrices, varStocks, finalImages)) {
                 response.sendRedirect(request.getContextPath() + "/admin/products");
             } else {
-                throw new Exception("Không thể thêm sản phẩm!");
+                throw new Exception("Lỗi: Mã sản phẩm bị trùng hoặc thiếu thông tin!");
             }
 
         } catch (Exception e) {

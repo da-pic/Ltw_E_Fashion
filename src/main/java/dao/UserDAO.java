@@ -89,17 +89,18 @@ public class UserDAO {
                      "JOIN roles r ON ur.role_id = r.id " +
                      "WHERE ur.user_id = ?";
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement stmt = conn.prepareCall(sql);
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) { 
+            
             stmt.setString(1, userID);
             
-            ResultSet rs = stmt.executeQuery();
-            
-            if(rs.next()){
-                role = rs.getString("name");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    role = rs.getString("name");
+                }
             }
         } catch (Exception e) {
+            e.printStackTrace(); 
         }
 
         return role;

@@ -61,7 +61,7 @@
                 <div style="color: white; background-color: #d32f2f; padding: 10px; margin-bottom: 20px; border-radius: 4px; text-align: center;">${error}</div>
             </c:if>
 
-            <form action="${pageContext.request.contextPath}/admin/products/update" method="POST">
+            <form action="${pageContext.request.contextPath}/admin/products/update" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>Mã Sản Phẩm (ID)</label>
                     <input type="text" name="productId" class="form-control readonly-input" value="${product.id}" readonly>
@@ -118,17 +118,24 @@
                     <thead>
                         <tr>
                             <th style="width: 15%;">Mã (ID)</th>
+                            <th style="width: 12%; text-align: center;">Ảnh</th>
                             <th>Màu sắc</th>
                             <th>Kích cỡ</th>
                             <th>Giá bán (VNĐ)</th>
                             <th>Tồn kho</th>
                             <th style="width: 8%; text-align: center;">Xóa</th>
                         </tr>
+
                     </thead>
                     <tbody>
-                        <c:forEach var="v" items="${product.productVariants}">
+                        <c:forEach var="v" items="${product.productVariants}" varStatus="stt">
                             <tr>
                                 <td><input type="text" name="varId" value="${v.id}" class="form-control readonly-input" readonly></td>
+                                <td style="text-align: center;">
+                                    <img id="preview_${stt.index}" src="${pageContext.request.contextPath}${v.image}" style="width: 50px; height: 50px; object-fit: cover; display: block; margin: 0 auto 5px; border-radius:4px;" alt="Chưa có ảnh">
+                                    <input type="hidden" name="varExistingImage" value="${v.image}">
+                                    <input type="file" name="varImageFile" class="form-control" style="font-size: 11px; padding: 4px;" accept="image/*" onchange="previewImage(this, 'preview_${stt.index}')">
+                                </td>
                                 <td><input type="text" name="varColor" value="${v.color}" class="form-control" required></td>
                                 <td><input type="text" name="varSize" value="${v.size}" class="form-control" required></td>
                                 <td><input type="number" name="varPrice" value="${v.price}" class="form-control" required min="0"></td>
@@ -209,11 +216,26 @@
             finalInput.value = path.length > 0 ? path[path.length - 1].id : '';
         }
 
+        function previewImage(input, imgId) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(imgId).src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         function addVariantRow() {
             const tbody = document.querySelector('#variantTable tbody');
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><input type=\"text\" name=\"varId\" value=\"\" class=\"form-control readonly-input\" placeholder=\"Tự cấp mã\" readonly></td>
+                <td style="text-align: center;">
+                    <img id="preview_${newRowCounter}" src="" style="width: 50px; height: 50px; object-fit: cover; display: block; margin: 0 auto 5px; border-radius:4px;" alt="Ảnh mới">
+                    <input type="hidden" name="varExistingImage" value="">
+                    <input type="file" name="varImageFile" class="form-control" style="font-size: 11px; padding: 4px;" accept="image/*" onchange="previewImage(this, 'preview_${newRowCounter}')">
+                </td>
                 <td><input type=\"text\" name=\"varColor\" class=\"form-control\" required></td>
                 <td><input type=\"text\" name=\"varSize\" class=\"form-control\" required></td>
                 <td><input type=\"number\" name=\"varPrice\" class=\"form-control\" required min=\"0\"></td>
