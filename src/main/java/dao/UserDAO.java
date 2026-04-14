@@ -1,9 +1,13 @@
 package dao;
 
-import model.User;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.User;
 import util.DatabaseConnection;
 public class UserDAO {
     
@@ -171,4 +175,34 @@ public class UserDAO {
         return false;
     }
    
+    public boolean assignRoleAndEmployee(String userId, String roleName) {
+        String sqlRole = "INSERT INTO user_role (user_id, role_id) SELECT ?, id FROM roles WHERE name = ?";
+        String sqlEmployee = "INSERT INTO employee (employee_id, base_salary) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            conn.setAutoCommit(false); 
+
+            // 1. Thêm vào bảng user_role
+            try (PreparedStatement stmtRole = conn.prepareStatement(sqlRole)) {
+                stmtRole.setString(1, userId);
+                stmtRole.setString(2, roleName);
+                stmtRole.executeUpdate();
+            }
+
+            if ("Employee".equalsIgnoreCase(roleName) || "Admin".equalsIgnoreCase(roleName)) {
+                try (PreparedStatement stmtEmp = conn.prepareStatement(sqlEmployee)) {
+                    stmtEmp.setString(1, userId);
+                    stmtEmp.setInt(2, 5000000); 
+                    stmtEmp.executeUpdate();
+                }
+            }
+
+            conn.commit(); 
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
 }

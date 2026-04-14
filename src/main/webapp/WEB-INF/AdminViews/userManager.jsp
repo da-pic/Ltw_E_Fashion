@@ -29,13 +29,26 @@
         .btn-unlock { background-color: #2e7d32; color: white; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 13px; font-weight: bold;}
         .btn-lock:hover { background-color: #b71c1c; }
         .btn-unlock:hover { background-color: #1b5e20; }
+
+        .btn-add {
+            background-color: #e64a19;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .btn-add:hover {
+            background-color: #d84315;
+        }
     </style>
 </head>
 <body>
 
     <div class="top-header">
         <div class="header-left">
-            <a href="${pageContext.request.contextPath}/admin/dashboard" class="brand">E-FASHION ADMIN</a>
+            <a href="${pageContext.request.contextPath}/admin/dashboard" class="brand">E-FASHION</a>
             <div class="nav-links">
                 <a href="${pageContext.request.contextPath}/admin/dashboard">TỔNG QUAN</a>
                 <a href="${pageContext.request.contextPath}/admin/products">SẢN PHẨM</a>
@@ -53,6 +66,7 @@
     <div class="container">
         <div class="page-header">
             <h2 class="page-title">QUẢN LÝ NGƯỜI DÙNG</h2>
+            <a href="${pageContext.request.contextPath}/admin/users/add" class="btn-add">+ Thêm người dùng</a>
         </div>
         
         <table>

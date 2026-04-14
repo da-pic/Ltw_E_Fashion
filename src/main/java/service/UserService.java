@@ -62,4 +62,13 @@ public class UserService {
     public boolean updateUserStatus(String userId, boolean status) {
         return userDAO.updateUserStatus(userId, status);
     }
+
+    public boolean registerUserWithRole(User newUser, String plainPassword, String roleName) {
+        boolean isRegistered = this.register(newUser, plainPassword);
+        
+        if (isRegistered) {
+            return userDAO.assignRoleAndEmployee(newUser.getId(), roleName);
+        }
+        return false;
+    }
 }

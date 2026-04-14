@@ -34,7 +34,7 @@
 <body>
     <div class="top-header">
         <div class="header-left">
-            <a href="${pageContext.request.contextPath}/admin/dashboard" class="brand">E-FASHION ADMIN</a>
+            <a href="${pageContext.request.contextPath}/admin/dashboard" class="brand">E-FASHION</a>
             <div class="nav-links">
                 <a href="${pageContext.request.contextPath}/admin/dashboard">TỔNG QUAN</a>
                 <a href="${pageContext.request.contextPath}/admin/products">SẢN PHẨM</a>

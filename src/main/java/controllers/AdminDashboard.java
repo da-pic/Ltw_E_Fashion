@@ -1,14 +1,13 @@
 // Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
 package controllers;
 
+import java.io.IOException;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.util.Locale;
 import service.OrderService;
 import service.UserService;
 
@@ -27,11 +26,10 @@ public class AdminDashboard extends HttpServlet {
       int totalUsers = this.userService.getAllUsers().size();
       int totalOrders = this.orderService.getTotalOrders();
       long totalRevenue = this.orderService.getTotalRevenue();
-      NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-      String formattedRevenue = format.format(totalRevenue);
+      
       request.setAttribute("totalUsers", totalUsers);
       request.setAttribute("totalOrders", totalOrders);
-      request.setAttribute("totalRevenue", formattedRevenue);
+      request.setAttribute("totalRevenue", totalRevenue);
       request.setAttribute("pageTitle", "Admin Dashboard");
       request.getRequestDispatcher("/WEB-INF/AdminViews/dashboard.jsp").forward(request, response);
    }
