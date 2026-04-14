@@ -6,19 +6,20 @@ public class ProductVariant {
     private String color;
     private String size;
     private String image;
-    private String importPrice;
+    private int importPrice;
     private int price;
     private int stock;
     private Boolean is_active;
 
     public ProductVariant(String id, String product_id, String color, String size, 
-                          String image, int price, int stock, Boolean is_active) {
+                          String image, int import_price, int price, int stock, Boolean is_active) {
         this.id = id;
         this.product_id = product_id;
         this.color = color;
         this.size = size;
         this.image = image;
         this.price = price;
+        this.importPrice = import_price;
         this.stock = stock;
         this.is_active = is_active;
     }
@@ -45,6 +46,10 @@ public class ProductVariant {
 
     public int getPrice() {
         return price;
+    }
+    
+    public int getImportPrice() {
+        return importPrice;
     }
 
     public int getStock() {
@@ -76,7 +81,7 @@ public class ProductVariant {
     }
     
     public void setImportPrice(int import_price) {
-        this.price = price;
+        this.importPrice = import_price;
     }
 
     public void setPrice(int price) {

@@ -166,6 +166,7 @@
                 <a href="${pageContext.request.contextPath}/admin/dashboard">TỔNG QUAN</a>
                 <a href="${pageContext.request.contextPath}/admin/products" class="active">SẢN PHẨM</a>
                 <a href="${pageContext.request.contextPath}/admin/users">NGƯỜI DÙNG</a>
+                <a href="${pageContext.request.contextPath}/admin/employees">NHÂN VIÊN</a>
                 <a href="${pageContext.request.contextPath}/admin/orders">ĐƠN HÀNG</a>
             </div>
         </div>
@@ -197,7 +198,7 @@
                 <c:forEach var="p" items="${productList}">
                     <tr>
                         <td>
-                            <img src="${pageContext.request.contextPath}/assets/images/${p.display_image}" class="img-thumbnail" alt="Lỗi ảnh">
+                            <img src="${pageContext.request.contextPath}${p.display_image}" class="img-thumbnail" alt="Lỗi ảnh">
                         </td>
                         <td>${p.id}</td>
                         <td>${p.product_name}</td>

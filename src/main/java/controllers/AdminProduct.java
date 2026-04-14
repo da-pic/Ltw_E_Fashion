@@ -12,7 +12,7 @@ import model.Product;
 import service.ProductService;
 
 // Đường dẫn được bảo vệ bởi AdminFilter
-@WebServlet(urlPatterns = {"/admin/products"})
+@WebServlet(urlPatterns = {"/admin/products"})  
 public class AdminProduct extends HttpServlet {
 
     private ProductService productService = new ProductService();

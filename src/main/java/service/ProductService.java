@@ -78,42 +78,88 @@ public class ProductService {
         this.productDAO.deleteProduct(productID);
     }
     
-    public boolean updateProductWithVariants(Product product, String[] varIds, String[] varColors, String[] varSizes, String[] varPrices, String[] varStocks) {
-        boolean pSuccess = productDAO.updateProduct(product);
-        if (!pSuccess) return false;
+    public boolean updateProductWithVariantsFull(
+            Product product,
+            String[] varIds,
+            String[] varColors,
+            String[] varSizes,
+            String[] varPrices,
+            String[] varImportPrices,
+            String[] varStocks,
+            String[] varActives,
+            List<String> images) {
 
-        List<ProductVariant> oldVariants = variantDAO.getProductVariantsByProductId(product.getId());
-        Set<String> submittedIds = new HashSet<>();
+        try {
 
-        if (varIds != null) {
-            for (int i = 0; i < varIds.length; i++) {
-                String vId = varIds[i];
+            productDAO.updateProduct(product);
+
+            for (int i = 0; i < varColors.length; i++) {
+
+                String id = (varIds != null && i < varIds.length) ? varIds[i] : null;
                 String color = varColors[i];
                 String size = varSizes[i];
-                int price = (varPrices[i] != null && !varPrices[i].isEmpty()) ? (int) Double.parseDouble(varPrices[i]) : 0;
-                int stock = (varStocks[i] != null && !varStocks[i].isEmpty()) ? Integer.parseInt(varStocks[i]) : 0;
 
-                if (vId == null || vId.trim().isEmpty()) {
-                    vId = "v-" + UUID.randomUUID().toString().substring(0, 8);
-                    ProductVariant newV = new ProductVariant(vId, product.getId(), color, size, null, price, stock, true);
-                    variantDAO.addProductVariants(newV);
+                int price = Integer.parseInt(varPrices[i]);
+
+                int importPrice = (varImportPrices[i] == null || varImportPrices[i].isEmpty())
+                        ? 0 : Integer.parseInt(varImportPrices[i]);
+
+                int stock = Integer.parseInt(varStocks[i]);
+
+                String image = (images != null && i < images.size()) ? images.get(i) : null;
+
+                String imagePath = image;
+
+                if (image != null && !image.startsWith("images/")) {
+                    imagePath = "/images/" + image;
+                }
+                
+                boolean active = true;
+
+                if (varActives != null && i < varActives.length) {
+                    active = "true".equals(varActives[i]);
+                }
+
+                if ((varActives == null || i >= varActives.length) && id != null && !id.isEmpty()) {
+                    ProductVariant old = variantDAO.getProductVariantsById(id);
+                    if (old != null) {
+                        active = old.getIs_active();
+                    }
+                }
+
+                ProductVariant variant = new ProductVariant(
+                        (id == null || id.isEmpty()) ? UUID.randomUUID().toString() : id,
+                        product.getId(),
+                        color,
+                        size,
+                        imagePath,
+                        importPrice,
+                        price,
+                        stock,
+                        active
+                );
+
+                if (id == null || id.trim().isEmpty()) {
+                    variantDAO.addProductVariants(variant);
+
                 } else {
-                    ProductVariant updateV = new ProductVariant(vId, product.getId(), color, size, null, price, stock, true);
-                    variantDAO.updateVariant(updateV);
-                    submittedIds.add(vId); 
-                }
-            }
-        }
+                    if (image == null) {
+                        ProductVariant old = variantDAO.getProductVariantsById(id);
+                        if (old != null) {
+                            variant.setImage(old.getImage());
+                        }
+                    }
 
-        if (oldVariants != null) {
-            for (ProductVariant oldV : oldVariants) {
-                if (!submittedIds.contains(oldV.getId())) {
-                    variantDAO.deleteProductVariant(oldV.getId());
+                    variantDAO.updateVariant(variant);
                 }
             }
-        }
-        
-        return true;
+
+            return true;
+
+        } catch (Exception e) { 
+            e.printStackTrace();
+            return false;
+        }   
     }
     
     public boolean restoreProduct(String id) {

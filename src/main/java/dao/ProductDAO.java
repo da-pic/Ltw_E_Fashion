@@ -13,7 +13,7 @@ public class ProductDAO {
         String sql = "SELECT p.id, p.product_name, p.brand_id, p.category_id, " +
                      "p.is_active, p.description, p.supplier_id, " +
                      "MIN(v.price) AS display_price, " +
-                     "(SELECT image FROM product_variants WHERE product_id = p.id LIMIT 1) AS display_image " +
+                     "(SELECT image FROM product_variants WHERE product_id = p.id AND is_active = 1 LIMIT 1) AS display_image " +
                      "FROM product p " +
                      "LEFT JOIN product_variants v ON p.id = v.product_id " +
                      "GROUP BY p.id";

@@ -7,6 +7,7 @@ dao\CategoryDAO.class
 controllers\CustomerHome.class
 model\ImportItem.class
 model\Address.class
+controllers\AdminAddEmployee.class
 model\Product.class
 dao\UserDAO.class
 model\Employee.class
@@ -16,6 +17,7 @@ model\ProductVariant.class
 model\User.class
 controllers\AdminUpdateProduct.class
 controllers\AdminUser.class
+util\PasswordBCrypt.class
 controllers\AdminOrderDetail.class
 controllers\CustomerAddress.class
 model\Brand.class
@@ -23,6 +25,7 @@ service\AddressService.class
 dao\BrandDAO.class
 model\Category.class
 dao\ProductDAO.class
+util\AdminFilter.class
 model\CartItem.class
 controllers\UpdateProfile.class
 model\Supplier.class
@@ -38,6 +41,7 @@ service\ProductService.class
 controllers\CustomerProfile.class
 dao\ImportDAO.class
 controllers\AdminToggleUser.class
+controllers\AdminEmployeeSalary.class
 util\DatabaseConnection.class
 model\Order.class
 dao\CouponDAO.class
@@ -47,4 +51,5 @@ controllers\AdminAddProduct.class
 controllers\AdminOrder.class
 model\Coupon.class
 controllers\AdminProduct.class
+controllers\AdminEmployee.class
 dao\EmployeeDAO.class

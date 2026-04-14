@@ -193,4 +193,42 @@ public class EmployeeDAO {
 
         return false;
     }
+    
+    public boolean FineEmployee(String employeeID, int amount, String description){
+        String sql = "INSERT INTO salary_log (id, employee_id, amount, type, description) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, java.util.UUID.randomUUID().toString());
+            ps.setString(2, employeeID);
+            ps.setInt(3, amount);
+            ps.setString(4, "fine");
+            ps.setString(5, description);
+            
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;        
+    }
+    
+    public boolean BonusEmployee(String employeeID, int amount, String description){
+        String sql = "INSERT INTO salary_log (id, employee_id, amount, type, description) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, java.util.UUID.randomUUID().toString());
+            ps.setString(2, employeeID);
+            ps.setInt(3, amount);
+            ps.setString(4, "bonus");
+            ps.setString(5, description);
+            
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;         
+    }
 }

@@ -11,15 +11,16 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import service.OrderService;
 import service.UserService;
+import service.ProductService;
 
 @WebServlet(
-   name = "AdminController",
+   name = "AdminDashboard",
    urlPatterns = {"/admin/dashboard"}
 )
 public class AdminDashboard extends HttpServlet {
    private UserService userService = new UserService();
    private OrderService orderService = new OrderService();
-
+   private ProductService productService = new ProductService();
    public AdminDashboard() {
    }
 
@@ -27,8 +28,10 @@ public class AdminDashboard extends HttpServlet {
       int totalUsers = this.userService.getAllUsers().size();
       int totalOrders = this.orderService.getTotalOrders();
       long totalRevenue = this.orderService.getTotalRevenue();
+      int totalProducts = this.productService.getAllProduct().size();
       NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
       String formattedRevenue = format.format(totalRevenue);
+      request.setAttribute("totalProducts", totalProducts);
       request.setAttribute("totalUsers", totalUsers);
       request.setAttribute("totalOrders", totalOrders);
       request.setAttribute("totalRevenue", formattedRevenue);
