@@ -1,0 +1,15 @@
+# NetBeans specific
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Tomcat/Server specific
+/target/
+*.class
+
+# Mac/Windows OS files
+.DS_Store
+Thumbs.db
