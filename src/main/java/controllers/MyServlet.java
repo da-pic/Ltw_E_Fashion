@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.IOException;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet; 
 import jakarta.servlet.http.HttpServlet;
@@ -13,7 +14,12 @@ public class MyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String jspPath = "/WEB-INF/UserViews/login.jsp";
-        request.getRequestDispatcher(jspPath).forward(request, response);
+        String path = request.getServletPath();
+        
+        if (path == null || path.equals("/") || path.isEmpty()) {
+            request.getRequestDispatcher("/WEB-INF/CustomerViews/login.jsp").forward(request, response);
+        } else {
+            request.getServletContext().getNamedDispatcher("default").forward(request, response);
+        }
     }
 }

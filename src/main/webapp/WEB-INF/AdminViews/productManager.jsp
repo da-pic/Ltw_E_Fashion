@@ -197,7 +197,7 @@
                 <c:forEach var="p" items="${productList}">
                     <tr>
                         <td>
-                            <img src="${pageContext.request.contextPath}/assets/images/${p.display_image}" class="img-thumbnail" alt="Lỗi ảnh">
+                            <img src="${pageContext.request.contextPath}${p.display_image}" class="img-thumbnail" alt="Lỗi ảnh">
                         </td>
                         <td>${p.id}</td>
                         <td>${p.product_name}</td>

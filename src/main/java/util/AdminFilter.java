@@ -24,6 +24,12 @@ public class AdminFilter implements Filter {
         
         HttpSession session = req.getSession(false);
         
+        String path = req.getRequestURI();
+        if (path.contains("/images/") || path.contains("/assets/") || path.contains("/css/") || path.contains("/js/")) {
+            chain.doFilter(request, response);
+            return; 
+        }
+
         boolean isLoggedIn = (session != null && session.getAttribute("currentUser") != null);
 
         if (!isLoggedIn) {
