@@ -13,6 +13,8 @@ public class Product {
     private String display_image; 
     private int display_price;
     private Double display_max_price;
+    private int sold_count;
+    private int max_discount;
     
     
     private String brandName;
@@ -69,5 +71,21 @@ public class Product {
     
     public Double getDisplay_max_price() {
         return display_max_price;
+    }
+    
+    public int getSold_count() {
+        return sold_count;
+    }
+
+    public void setSold_count(int sold_count) {
+        this.sold_count = sold_count;
+    }
+    
+    public int getMax_discount() {
+        return max_discount;
+    }
+    
+    public void setMax_discount(int max_discount) {
+        this.max_discount = max_discount;
     }
 }

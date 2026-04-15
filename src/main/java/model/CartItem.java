@@ -8,7 +8,9 @@ public class CartItem {
     private String color;
     private String size;
     private int amount;
-    private int unitPrice;
+    private int unit_price;
+    
+    private ProductVariant productVariant;
 
     public CartItem() {}
 
@@ -21,7 +23,7 @@ public class CartItem {
         this.color = color;
         this.size = size;
         this.amount = amount;
-        this.unitPrice = unitPrice;
+        this.unit_price = unitPrice;
     }
 
     public String getProductVariantId() { return productVariantId; }
@@ -42,9 +44,20 @@ public class CartItem {
     public int getAmount() { return amount; }
     public void setAmount(int amount) { this.amount = amount; }
 
-    public int getUnitPrice() { return unitPrice; }
-    public void setUnitPrice(int unitPrice) { this.unitPrice = unitPrice; }
+    public int getUnitPrice() { return unit_price; }
+    public void setUnitPrice(int unitPrice) { this.unit_price = unitPrice; }
     
     public String getCartID() { return this.cartID; }
     public void setCartID(String cartID) { this.cartID = cartID; }
+    
+    public int getTotalPrice() {
+        return this.amount * this.unit_price;
+    }
+    public void setProductVariant(ProductVariant productVariant) {
+        this.productVariant = productVariant;
+    }
+    
+    public ProductVariant getProductVariant(){
+        return this.productVariant;
+    }
 }

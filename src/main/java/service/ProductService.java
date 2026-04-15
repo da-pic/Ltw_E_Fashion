@@ -32,7 +32,6 @@ public class ProductService {
             List<ProductVariant> variants = variantDAO.getProductVariantsByProductId(productId);
             product.setProductVariants(variants);
 
-            // 🔥 thêm luôn brand + category cho detail
             product.setBrandName(brandDAO.getBrandNameByID(product.getBrand_id()));
             product.setCategory(categoryDAO.getFullCategory(product.getCategory_id()));
         }
@@ -164,5 +163,51 @@ public class ProductService {
     
     public boolean restoreProduct(String id) {
         return productDAO.restoreProduct(id);
+    }
+    public void logInteraction(String userId, String productId, String type) {
+        productDAO.logUserInteraction(userId, productId, type);
+    }
+    
+    
+    //Lấy danh sách sản phẩm đề xuất
+    public List<Product> getProductsForHomeDisplay(String userId) {
+        return productDAO.getAllProductsSortedByPreference(userId);
+    }
+    
+    //Tìm kiếm sản phẩm
+    public List<Product> searchProducts(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return new ArrayList<>(); 
+        }
+        return productDAO.searchProducts(keyword.trim());
+    }
+    
+    //Lấy danh sách danh mục
+    public List<model.Category> getAllCategories() {
+        return categoryDAO.getAllCategories();
+    }
+    
+    //lấy sản phẩm theo id danh mục
+    public List<Product> getProductsByCategory(int categoryId) {
+        return productDAO.getProductsByCategory(categoryId);
+    }
+    
+    //Ghi log cho search
+    public void logSearchInteractions(String userId, List<Product> products) {
+        productDAO.logSearchInteractionsBatch(userId, products);
+    }
+    
+    //Lấy top sản phẩm đc tìm kiếm nhiều nhất
+    public List<Product> getTopSearchedProducts() {
+        return productDAO.getTopSearchedProducts();
+    }
+    
+    //Lấy top sản phẩm áp đc voucher có % giảm nhiều nhất
+    public List<Product> getFlashSaleProducts() {
+        return productDAO.getFlashSaleProducts();
+    }
+    
+    public ProductVariant getProductVariantById(String id) {
+        return new ProductVariantDAO().getProductVariantsById(id);
     }
 }

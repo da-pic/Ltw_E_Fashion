@@ -1,23 +1,92 @@
-
 package dao;
 
-import model.Coupon;
-import java.util.List;
-import java.sql.Date;
-import java.util.ArrayList;
-import util.DatabaseConnection;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import model.Coupon;
+import util.DatabaseConnection;
 
 public class CouponDAO {
-    
-    public List<Coupon> getAllCoupon() {
-        List<Coupon> list = new ArrayList<>();
-        String sql = "SELECT * FROM coupon";
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
+    public Coupon getValidCoupon(String userId, String couponId, int currentTotal) {
+        String sql = "SELECT c.* FROM coupon c "
+                   + "JOIN user_coupon uc ON c.id = uc.coupon_id "
+                   + "WHERE uc.user_id = ? AND c.id = ? AND c.is_active = 1 "
+                   + "AND c.started_date <= CURRENT_DATE AND c.expired_date >= CURRENT_DATE "
+                   + "AND c.min_cost <= ? AND uc.`limit` > 0";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, userId);
+            ps.setString(2, couponId);
+            ps.setInt(3, currentTotal);
             ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                Coupon c = new Coupon();
+                c.setId(rs.getString("id"));
+                c.setType(rs.getString("type")); 
+                c.setValue(rs.getInt("value"));
+                c.setMaxDiscount(rs.getInt("max_discount"));
+                c.setMinCost(rs.getInt("min_cost"));
+                return c;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; 
+    }
+
+    public List<Map<String, Object>> getMyVouchers(String userId) {
+        List<Map<String, Object>> list = new ArrayList<>();
+
+        String sql = "SELECT c.*, uc.`limit` as usage_limit "
+                   + "FROM coupon c "
+                   + "JOIN user_coupon uc ON c.id = uc.coupon_id "
+                   + "WHERE uc.user_id = ? AND c.is_active = 1 AND uc.`limit` > 0 "
+                   + "ORDER BY c.expired_date ASC";
+                   
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, userId);
+            ResultSet rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Map<String, Object> voucher = new HashMap<>();
+                voucher.put("id", rs.getString("id"));
+                voucher.put("type", rs.getString("type"));
+                voucher.put("value", rs.getInt("value"));
+                voucher.put("max_discount", rs.getInt("max_discount"));
+                voucher.put("min_cost", rs.getInt("min_cost"));
+                voucher.put("started_date", rs.getDate("started_date"));
+                voucher.put("expired_date", rs.getDate("expired_date"));
+                voucher.put("usage_limit", rs.getInt("usage_limit")); 
+
+                Date expired = rs.getDate("expired_date");
+                boolean isExpired = expired.before(new java.util.Date());
+                voucher.put("is_expired", isExpired);
+                
+                list.add(voucher);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+    
+    public List<Coupon> getAllCoupons() {
+        List<Coupon> list = new ArrayList<>();
+
+        String sql = "SELECT * FROM coupon ORDER BY created_at DESC";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
                 Coupon c = new Coupon();
 
@@ -40,49 +109,30 @@ public class CouponDAO {
         return list;
     }
     
-    public List<Coupon> getUserCoupons (String userID)  {
-        List<Coupon> list = new ArrayList<>();
+    public boolean deleteCoupon(String id) {
+        String sql = "UPDATE coupon SET is_active = 0 WHERE id = ?";
 
-        String sql = "SELECT c.* " +
-                 "FROM user_coupon uc " +
-                 "JOIN coupon c ON uc.coupon_id = c.id " +
-                 "WHERE uc.user_id = ?";  
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, userID);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Coupon c = new Coupon();
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-                c.setId(rs.getString("id"));
-                c.setType(rs.getString("type"));
-                c.setValue(rs.getInt("value"));
-                c.setMaxDiscount(rs.getInt("max_discount"));
-                c.setMinCost(rs.getInt("min_cost"));
-                c.setStartedDate(rs.getDate("started_date"));
-                c.setExpiredDate(rs.getDate("expired_date"));
-                c.setActive(rs.getBoolean("is_active"));
-
-                list.add(c);
-            }
+            ps.setString(1, id);
+            return ps.executeUpdate() > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return list;
+        return false;
     }
     
-    public Coupon getCouponById(String couponID) {
 
+    public Coupon getCouponById(String id) {
         String sql = "SELECT * FROM coupon WHERE id = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, couponID);
-
+            ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -105,15 +155,13 @@ public class CouponDAO {
 
         return null;
     }
-    
     public boolean updateCoupon(Coupon coupon) {
+        String sql = "UPDATE coupon SET type=?, value=?, max_discount=?, min_cost=?, "
+                   + "started_date=?, expired_date=?, is_active=? WHERE id=?";
 
-        String sql = "UPDATE coupon SET type = ?, value = ?, max_discount = ?, min_cost = ?, " +
-                     "started_date = ?, expired_date = ?, is_active = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, coupon.getType());
             ps.setInt(2, coupon.getValue());
             ps.setInt(3, coupon.getMaxDiscount());
@@ -132,33 +180,19 @@ public class CouponDAO {
         return false;
     }
     
-    public boolean removeCoupon(String couponID) {
-        String sql = "UPDATE coupon SET is_active = FALSE WHERE id = ?";
-
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, couponID);
-            return ps.executeUpdate() > 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-    
     public boolean addCoupon(Coupon coupon) {
 
-        String sql = "INSERT INTO coupon (id, type, value, max_discount, min_cost, "
-                    + "started_date, expired_date, is_active) " +
+        String sql = "INSERT INTO coupon (id, type, value, max_discount, min_cost, " +
+                     "started_date, expired_date, is_active) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            Date now = new Date(System.currentTimeMillis());
+            // Lấy thời gian hiện tại
+            java.util.Date now = new java.util.Date();
 
+            // Tự tính trạng thái active
             boolean isActive = !now.before(coupon.getStartedDate()) 
                             && !now.after(coupon.getExpiredDate());
 
@@ -167,8 +201,8 @@ public class CouponDAO {
             ps.setInt(3, coupon.getValue());
             ps.setInt(4, coupon.getMaxDiscount());
             ps.setInt(5, coupon.getMinCost());
-            ps.setDate(6, new Date(coupon.getStartedDate().getTime()));
-            ps.setDate(7, new Date(coupon.getExpiredDate().getTime()));
+            ps.setDate(6, new java.sql.Date(coupon.getStartedDate().getTime()));
+            ps.setDate(7, new java.sql.Date(coupon.getExpiredDate().getTime()));
             ps.setBoolean(8, isActive);
 
             return ps.executeUpdate() > 0;
@@ -179,72 +213,4 @@ public class CouponDAO {
 
         return false;
     }
-
-    
-    public Integer getLimitUserCoupons(String userID, String couponID) {
-
-        String sql = "SELECT `limit` FROM user_coupon WHERE user_id = ? AND coupon_id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, userID);
-            ps.setString(2, couponID);
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt("limit");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-    
-    public boolean addUserCoupon(String userID, String couponID, int amount) {
-
-        String sql = "INSERT INTO user_coupon (user_id, coupon_id, `limit`) " +
-                     "VALUES (?, ?, ?) " +
-                     "ON DUPLICATE KEY UPDATE `limit` = `limit` + VALUES(`limit`)";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, userID);
-            ps.setString(2, couponID);
-            ps.setInt(3, amount);
-
-            return ps.executeUpdate() > 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-    
-    public boolean updateUserCoupon(String userID, String couponID, int delta) {
-
-        String sql = "UPDATE user_coupon SET `limit` = `limit` + ? " +
-                     "WHERE user_id = ? AND coupon_id = ? AND `limit` + ? >= 0";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, delta);
-            ps.setString(2, userID);
-            ps.setString(3, couponID);
-            ps.setInt(4, delta); 
-            return ps.executeUpdate() > 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-    
 }

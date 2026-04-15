@@ -45,7 +45,7 @@ public class UpdateProfile extends HttpServlet {
         java.sql.Date birthdate = java.sql.Date.valueOf(birthdateStr);
         currentUser.setBirthdate(birthdate);
 
-        boolean isUpdated = userService.updateUser(currentUser);
+        boolean isUpdated = userService.updateInformationByUserId(currentUser);
 
         if (isUpdated) {
             session.setAttribute("currentUser", currentUser);

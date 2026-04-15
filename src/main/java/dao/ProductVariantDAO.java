@@ -152,4 +152,41 @@ public class ProductVariantDAO {
         }
         return false;
     }
+    
+    //Lấy tên sản phẩm bằng id phân loại
+    public String getProductNameByVariantId(String variantId) {
+        String productName = null;
+        String sql = "SELECT p.product_name "
+                   + "FROM product p "
+                   + "JOIN product_variants pv ON p.id = pv.product_id "
+                   + "WHERE pv.id = ?";
+                   
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setString(1, variantId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                productName = rs.getString("product_name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productName;
+    } 
+    
+    public int getPriceByVariantId(String variantId) {
+        int price = 0;
+        String sql = "SELECT price FROM product_variants WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, variantId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) price = rs.getInt("price");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return price;
+    }
 }

@@ -24,6 +24,7 @@ public class ProductVariant {
         this.is_active = is_active;
     }
 
+
     public String getId() {
         return id;
     }

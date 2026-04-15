@@ -71,6 +71,8 @@ public class UserService {
         }
         return false;
     }
-    
+    public boolean updateInformationByUserId(User user){
+        return userDAO.updateUser(user);
+    }
     
 }

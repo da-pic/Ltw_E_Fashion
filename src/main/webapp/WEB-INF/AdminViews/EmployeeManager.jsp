@@ -169,12 +169,7 @@
                     <td>${e.employeeBirthDate}</td>
                     <td>${e.employeePhoneNumber}</td>
                     <td>${e.baseSalary}</td>
-                    <td>  
-                        <a href="${pageContext.request.contextPath}/admin/employees/salary?id=${e.employeeId}" 
-                           class="btn-view btn-salary">
-                           Xem
-                        </a>
-                           
+                    <td>   
                         <a href="${pageContext.request.contextPath}/admin/employees?action=delete&id=${e.employeeId}" 
                            class="btn-view btn-delete"
                            onclick="return confirm('Bạn có chắc muốn xóa nhân viên này không?');">

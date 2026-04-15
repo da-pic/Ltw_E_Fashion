@@ -168,6 +168,7 @@
                 <a href="${pageContext.request.contextPath}/admin/users">NGƯỜI DÙNG</a>
                 <a href="${pageContext.request.contextPath}/admin/employees">NHÂN VIÊN</a>
                 <a href="${pageContext.request.contextPath}/admin/orders">ĐƠN HÀNG</a>
+                <a href="${pageContext.request.contextPath}/admin/vouchers">VOUCHER</a>
             </div>
         </div>
         <div class="user-profile">

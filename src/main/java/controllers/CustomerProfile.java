@@ -19,6 +19,8 @@ public class CustomerProfile extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+        //Lấy thông tin người dùng
         HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("currentUser");
         
@@ -27,6 +29,7 @@ public class CustomerProfile extends HttpServlet {
             return;
         }
         
+        //Lấy danh sách địa chỉ bằng id người dùng
         String userId = String.valueOf(currentUser.getId()); 
         List<Address> myAddresses = addressService.getAddressesByUserId(userId);
         request.setAttribute("addressList", myAddresses);

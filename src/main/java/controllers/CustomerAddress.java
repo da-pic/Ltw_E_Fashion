@@ -49,7 +49,7 @@ public class CustomerAddress extends HttpServlet {
             } else {
                 request.setAttribute("error", "Dữ liệu không hợp lệ hoặc đã xảy ra lỗi!");
                 
-                request.getRequestDispatcher("/CustomerProfile").forward(request, response);
+                response.sendRedirect(request.getContextPath() + "/CustomerProfile?error=add_failed");
             }
         } 
         
@@ -84,7 +84,7 @@ public class CustomerAddress extends HttpServlet {
 
             boolean success = addressService.updateAddressByAddressId(addr);
             if (success) {
-        response.sendRedirect(request.getContextPath() + "/CustomerProfile?msg=update_success");
+                response.sendRedirect(request.getContextPath() + "/CustomerProfile?msg=update_success");
             } else {
                 response.sendRedirect(request.getContextPath() + "/CustomerProfile?error=update_failed");
             }
