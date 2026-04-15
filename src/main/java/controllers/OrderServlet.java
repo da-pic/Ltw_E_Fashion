@@ -1,7 +1,7 @@
 package controllers;
 
-import dao.OrderDAO;
 import model.Order;
+import service.OrderService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,21 +13,21 @@ import java.util.List;
 @WebServlet("/orders")
 public class OrderServlet extends HttpServlet {
 
-   protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+    private final OrderService orderService = new OrderService();
 
-    OrderDAO dao = new OrderDAO();
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-    try {
-        List<Order> orders = dao.getAllOrders();
+        try {
+            List<Order> orders = orderService.getAllOrders();
+            request.setAttribute("orders", orders);
+            request.getRequestDispatcher("/WEB-INF/seller/order.jsp")
+                   .forward(request, response);
 
-        request.setAttribute("orders", orders);
-        request.getRequestDispatcher("/WEB-INF/seller/order.jsp")
-               .forward(request, response);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        response.getWriter().println("Lỗi load đơn hàng!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.getWriter().println("Lỗi load đơn hàng!");
+        }
     }
-}
 }

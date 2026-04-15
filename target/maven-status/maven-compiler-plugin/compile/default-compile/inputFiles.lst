@@ -6,6 +6,7 @@ D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\dao\ProductVariantDAO.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\dao\UserDAO.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\dao\AddressDAO.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\model\CartItem.java
+D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\service\SalaryService.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\controllers\MyServlet.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\controllers\OrderActionServlet.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\controllers\PlaceOrderServlet.java
@@ -18,10 +19,12 @@ D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\model\Coupon.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\model\User.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\model\Salary.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\dao\CartDAO.java
+D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\service\CartService.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\model\Address.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\service\ProductService.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\controllers\AuthController.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\controllers\ProductController.java
+D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\service\OrderService.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\controllers\OrderSuccessServlet.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\service\UserService.java
 D:\NetBeansProjects\Ltw_E_Fashion-staff\src\main\java\model\CheckoutSummary.java
