@@ -13,9 +13,9 @@ import java.util.*;
 public class AddressService {
     private AddressDAO addressDAO = new AddressDAO();
     
+    //Thêm thông tin địa chỉ mới cho ng dùng
     public boolean createNewAddress(Address address, String userId){
         if (userId == null || userId.trim().isEmpty()) {
-            System.out.println("Lỗi: User ID không hợp lệ.");
             return false;
         }
 
@@ -33,13 +33,14 @@ public class AddressService {
             address.getWard() == null || address.getWard().trim().isEmpty()) {
             return false;
         }
-
+        if(addressDAO.existedAddressWhenAdd(address, userId)){
+            return false;
+        }
         return addressDAO.saveAddress(address, userId);
     }
     
     public List<Address> getAddressesByUserId(String userId) {
         if (userId == null || userId.trim().isEmpty()) {
-            System.out.println("Lỗi: Không thể lấy địa chỉ vì User ID trống.");
             return new ArrayList<>(); 
         }
         
@@ -51,6 +52,24 @@ public class AddressService {
     }
     
     public boolean updateAddressByAddressId(Address address){
+        if (address == null) {
+            return false;
+        }
+
+        String phone = address.getPhone_number();
+        if (phone == null || !phone.matches("\\d{10,11}")) {
+            return false; 
+        }
+
+        if (address.getCity() == null || address.getCity().trim().isEmpty() ||
+            address.getDistrict() == null || address.getDistrict().trim().isEmpty() ||
+            address.getWard() == null || address.getWard().trim().isEmpty()) {
+            return false;
+        }
+        
+        if(addressDAO.existedAddressWhenUpdate(address)){
+            return false;
+        }
         return addressDAO.updateAddressByAddressId(address);
     }
     

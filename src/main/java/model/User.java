@@ -11,10 +11,11 @@ public class User {
     private String username;
     private String passwordHash;
     private boolean isactive;
-    
+    private String role; 
 
     public User() {}
 
+   
     public User(String id, String name, Date birthdate, String phonenumber, String gender, String username, String passwordHash, boolean isactive) {
         this.id = id;
         this.name = name;
@@ -42,5 +43,7 @@ public class User {
     public void setGender(String gender) { this.gender = gender; }
     public boolean isactive() { return isactive; }
     public void setIsactive(boolean isactive) { this.isactive = isactive; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
 }

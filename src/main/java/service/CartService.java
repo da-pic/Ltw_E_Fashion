@@ -1,43 +1,54 @@
 package service;
 
 import dao.CartDAO;
-import model.ProductVariant;
-import java.util.ArrayList;
-import java.util.List;
+import dao.ProductVariantDAO;
+import model.Cart;
 
-/**
- *
- * @author Chinh
- */
 public class CartService {
-    
     private CartDAO cartDAO = new CartDAO();
-    
-    public String getCartFromUser(String userId) {
-        if (userId == null || userId.trim().isEmpty()) {
-            return null;
+    private ProductVariantDAO variantDAO = new ProductVariantDAO();
+
+    public Cart getCartForUser(String userId) {
+        if (userId == null) return null;
+        
+        Cart cart = cartDAO.getCartByUserId(userId);
+        
+        if (cart != null && cart.getItems() != null) {
+            for (model.CartItem item : cart.getItems()) {
+                String name = variantDAO.getProductNameByVariantId(item.getProduct_variant_id());
+
+                item.setProductName(name);
+            }
         }
-        return cartDAO.getCartFromUser(userId);
+        
+        return cart;
+    }
+
+    public void addToCart(String userId, String variantId, int quantity) {
+        if (userId == null || variantId == null || quantity <= 0) return;
+
+        String cartId = cartDAO.getOrCreateCartId(userId);
+
+        int unitPrice = variantDAO.getPriceByVariantId(variantId); 
+
+        cartDAO.upsertCartItem(cartId, variantId, quantity, unitPrice);
+    }
+
+    public void removeItem(String userId, String variantId) {
+        String cartId = cartDAO.getOrCreateCartId(userId);
+        cartDAO.removeCartItem(cartId, variantId);
     }
     
-    public List<ProductVariant> getAllProductVariantFromCart(String cartId) {
-        if (cartId == null || cartId.trim().isEmpty()) {
-            return new ArrayList<>(); 
-        }
-        return cartDAO.getAllProductVariantFromCart(cartId);
-    }
-    
-    public void addProductToCart(String cartId, ProductVariant productVariant, int amount) {
-        if (cartId != null && !cartId.trim().isEmpty() && productVariant != null && amount > 0) {
-            cartDAO.addProductToCart(cartId, productVariant, amount);
-        } else {
-            System.out.println("Dữ liệu đầu vào không hợp lệ. Không thể thêm vào giỏ hàng.");
-        }
-    }
-    
-    public void removeProductFromCart(String cartId, String productVariantId) {
-        if (cartId != null && !cartId.trim().isEmpty() && productVariantId != null && !productVariantId.trim().isEmpty()) {
-            cartDAO.removeProductFromCart(cartId, productVariantId);
+    public void decreaseItem(String userId, String variantId) {
+        String cartId = cartDAO.getOrCreateCartId(userId);
+
+        int currentQuantity = cartDAO.getCartItemQuantity(cartId, variantId);
+
+        if (currentQuantity > 1) {
+            cartDAO.updateCartItemQuantity(cartId, variantId, currentQuantity - 1);
+        } else if (currentQuantity == 1) {
+            cartDAO.removeCartItem(cartId, variantId);
         }
     }
 }
+    

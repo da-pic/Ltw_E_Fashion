@@ -35,7 +35,7 @@ public class AuthController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String path = request.getServletPath();
-
+        //Xử lý đăng nhập
         if ("/login".equals(path)) {
             String user = request.getParameter("username");
             String pass = request.getParameter("password");
@@ -49,7 +49,7 @@ public class AuthController extends HttpServlet {
                 request.setAttribute("error", "Sai tên đăng nhập hoặc mật khẩu!");
                 request.getRequestDispatcher("/WEB-INF/CustomerViews/login.jsp").forward(request, response);
             }
-
+        //Xử lý đăng ký
         } else if ("/register".equals(path)) {
             User newUser = new User();
             newUser.setName(request.getParameter("name"));

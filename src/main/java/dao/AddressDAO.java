@@ -30,6 +30,47 @@ public class AddressDAO {
             return false;
     }
     
+    public boolean existedAddressWhenAdd(Address address, String userId){
+        String sql = "SELECT * FROM address WHERE user_id = ? AND phone_number = ? "
+                + "AND street = ? AND ward = ? AND district = ? AND city = ? "
+                + "AND detail = ?";
+        try(Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1, userId);
+            stmt.setString(2, address.getPhone_number());
+            stmt.setString(3, address.getStreet());
+            stmt.setString(4, address.getWard());
+            stmt.setString(5, address.getDistrict());
+            stmt.setString(6, address.getCity());
+            stmt.setString(7, address.getDetail());
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public boolean existedAddressWhenUpdate(Address address){
+        String sql = "SELECT * FROM address WHERE user_id = ? AND phone_number = ? "
+                + "AND street = ? AND ward = ? AND district = ? AND city = ? "
+                + "AND detail = ?";
+        try(Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1, address.getUser_id());
+            stmt.setString(2, address.getPhone_number());
+            stmt.setString(3, address.getStreet());
+            stmt.setString(4, address.getWard());
+            stmt.setString(5, address.getDistrict());
+            stmt.setString(6, address.getCity());
+            stmt.setString(7, address.getDetail());
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
     public List<Address> getAddressByUserId(String userId){
         String sql = "SELECT * FROM address a JOIN users u ON a.user_id = u.id WHERE u.id = ?";
         try(Connection conn = DatabaseConnection.getConnection();
